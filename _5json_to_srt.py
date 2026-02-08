@@ -26,5 +26,9 @@ def json_to_srt(json_path: Path, srt_path: Path):
 
     print(f"✅ SRT 生成完成: {srt_path}")
 
-if __name__ == "__main__":
+def run():
     json_to_srt(SUBTITLE_JSON, SRT_FILE)
+
+if __name__ == "__main__":
+    run()
+    

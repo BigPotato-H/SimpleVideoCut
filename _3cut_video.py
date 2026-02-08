@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 
 from config import INPUT_VIDEO,RUN_DIR, PAUSE_JSON_PATH, CUT_VIDEO, CUT_AUDIO
-
+import shutil
 
 def load_pauses(pause_json: Path):
     with open(pause_json, "r", encoding="utf-8") as f:
@@ -77,20 +77,12 @@ def extract_segments(video: Path, segments, work_dir: Path):
 
 
 def concat_segments(seg_files, output_file: Path, is_audio=False):
-    """
-    合并视频或音频片段
-
-    :param seg_files: Path 列表
-    :param output_file: 输出文件路径
-    :param is_audio: True 时合并音频
-    """
     list_file = output_file.parent / "concat.txt"
     with open(list_file, "w", encoding="utf-8") as f:
         for seg in seg_files:
             f.write(f"file '{seg.as_posix()}'\n")
 
     if is_audio:
-        # 合并音频，用 WAV 输出
         cmd = [
             "ffmpeg",
             "-y",
@@ -103,18 +95,21 @@ def concat_segments(seg_files, output_file: Path, is_audio=False):
             str(output_file)
         ]
     else:
-        # 合并视频
         cmd = [
             "ffmpeg",
             "-y",
             "-f", "concat",
             "-safe", "0",
             "-i", str(list_file),
-            "-c", "copy",
+            "-c:v", "libx264",
+            "-preset", "veryfast",
+            "-crf", "18",
+            "-pix_fmt", "yuv420p",
             str(output_file)
         ]
 
     subprocess.run(cmd, check=True)
+
 
 
 
@@ -129,7 +124,9 @@ def run():
     print(f"✂️ keep segments: {len(keep_segments)}")
 
     seg_dir = RUN_DIR / "segments"
-    seg_dir.mkdir(exist_ok=True)
+    if seg_dir.exists():
+        shutil.rmtree(seg_dir)   
+    seg_dir.mkdir(parents=True)
 
     seg_files_video = []
     seg_files_audio = []
@@ -143,13 +140,17 @@ def run():
         cmd_video = [
             "ffmpeg",
             "-y",
-            "-i", str(video),
             "-ss", str(start),
             "-to", str(end),
-            "-c:v", "copy",   # 视频流直接拷贝
-            "-an",            # 不保留音频
+            "-i", str(video),
+            "-c:v", "libx264",
+            "-preset", "veryfast",
+            "-crf", "18",
+            "-pix_fmt", "yuv420p",
+            "-an",
             str(v_path)
         ]
+
         cmd_audio = [
             "ffmpeg",
             "-y",

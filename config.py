@@ -8,7 +8,9 @@ env.setup_ffmpeg()
 root_path = r"D:\0hn\000vehicle\0-oral\\"
 
 # 换成自己的视频名称
-input_video = "378630b72a0fd815dfd57e6ef84f2995.mp4"     
+input_video = "f31e5ad1eb4117497a328b0a1340270a.mp4"     
+#ppt地址
+PPT_FILE_NA = "0208.pptx"
 
 BASE_OUTPUT_DIR = Path(root_path)
 #日期
@@ -32,3 +34,8 @@ CUT_AUDIO = RUN_DIR / "3cut_audio.wav"
 SUBTITLE_JSON = RUN_DIR / "4subtitles.json"
 # 输出字幕srt（导入剪映用）
 SRT_FILE = RUN_DIR / "5subtitles.srt"
+
+#ppt地址
+PPT_FILE = BASE_OUTPUT_DIR / PPT_FILE_NA
+PPT_CONFIG_JSON = RUN_DIR /"slides.json"
+PPT_VIDEO_OUTPUT = RUN_DIR / "ppt_video.mp4"
