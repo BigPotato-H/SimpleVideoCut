@@ -1,0 +1,5 @@
+ThirdParty/
+.vscode/
+__pycache__/
+whisper_cache/
+*.pyc
